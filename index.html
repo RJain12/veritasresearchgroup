@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Veritas Research Group</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Literata:wght@300;400;600&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #fafafa;
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            font-weight: 400;
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+            .terminal {
+                padding: 15px;
+                height: 400px;
+            }
+            .ascii-art {
+                font-size: 0.75em;
+            }
+        }
+        
+        .ascii-art {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #222;
+            white-space: pre;
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .subtitle {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            font-weight: 300;
+            color: #666;
+            margin-bottom: 60px;
+            font-style: italic;
+            letter-spacing: 0.3px;
+            text-align: center;
+        }
+        
+        .terminal {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            height: 350px;
+            width: 100%;
+            max-width: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            scroll-behavior: smooth;
+            box-sizing: border-box;
+            resize: none;
+        }
+        
+        .terminal-line {
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        
+        .prompt {
+            color: #666;
+        }
+        
+        .command {
+            color: #222;
+        }
+        
+        .output {
+            color: #444;
+            margin-left: 20px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .input-line {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .input-line .prompt {
+            margin-right: 8px;
+        }
+        
+        #command-input {
+            background: transparent;
+            border: none;
+            color: #222;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            outline: none;
+            flex: 1;
+        }
+        
+        #command-input:focus {
+            outline: none;
+        }
+        
+        .terminal:focus-within {
+            border-color: #999;
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #222;
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .definition {
+            display: none;
+            margin-top: 15px;
+            padding: 15px 0;
+            border-top: 1px solid #ddd;
+        }
+        
+        .definition.show {
+            display: block;
+        }
+        
+        .word {
+            font-family: 'Literata', serif;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #111;
+        }
+        
+        .pronunciation {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        
+        .part-of-speech {
+            color: #888;
+            font-size: 0.85em;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .meaning {
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #444;
+        }
+        
+        .error {
+            color: #cc0000;
+        }
+        
+        .help-output {
+            color: #666;
+            line-height: 1.8;
+        }
+        
+        .help-command {
+            color: #222;
+        }
+        
+        .weather {
+            margin-top: 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+        }
+        
+        .weather-loading {
+            color: #999;
+        }
+        
+        .water-wave {
+            cursor: pointer;
+            user-select: none;
+            display: block;
+            text-align: center;
+            transition: opacity 0.3s ease;
+        }
+        
+        .water-wave:hover {
+            opacity: 0.8;
+        }
+        
+        .wave-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #666;
+            white-space: pre;
+            margin: 0;
+            display: inline-block;
+            line-height: 1.1;
+        }
+        
+        
+        .boat-svg {
+            width: 30px;
+            height: 30px;
+            margin: 0 auto;
+            display: block;
+        }
+        
+        .ship-container {
+            display: block;
+            margin-bottom: -8px;
+            text-align: center;
+        }
+        
+        .boat-wrapper {
+            display: inline-block;
+            animation: ship-bob 4s ease-in-out infinite;
+            transform-origin: center center;
+        }
+        
+        @keyframes ship-bob {
+            0%, 100% {
+                transform: rotate(-10deg);
+                opacity: 0.7;
+            }
+            50% {
+                transform: rotate(10deg);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ascii-art">    ╔═══════════════════════════╗
+    ║                           ║
+    ║        THE VERITAS        ║
+    ║       RESEARCH GROUP      ║
+    ║                           ║
+    ╚═══════════════════════════╝</div>
+    <p class="subtitle">Independent Equity Research on ML Bio Plays</p>
+    
+    <div class="terminal" id="terminal">
+        <div class="terminal-line">
+            <span class="prompt">veritas@research:~$</span> <span class="command">Welcome to Veritas Research Group</span>
+        </div>
+        <div class="output">Type 'help' or '/help' to see available commands.</div>
+        <div class="input-line">
+            <span class="prompt">veritas@research:~$</span>
+            <input type="text" id="command-input" autofocus autocomplete="off" spellcheck="false">
+            <span class="cursor"></span>
+        </div>
+    </div>
+
+    <div class="weather">
+        <div id="weather-content" class="water-wave"></div>
+    </div>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        const input = document.getElementById('command-input');
+        let commandHistory = [];
+        let historyIndex = -1;
+
+        const commands = {
+            help: () => {
+                return `Available commands:
+${' '.repeat(20)}/help          Show this help message
+${' '.repeat(20)}/about         Learn about Veritas
+${' '.repeat(20)}/reports       View research reports
+${' '.repeat(20)}/clear         Clear the terminal
+${' '.repeat(20)}/contact       Contact information`;
+            },
+            about: () => {
+                return `veritas
+${' '.repeat(20)}/ˈvɛrɪtɑːs/
+${' '.repeat(20)}noun
+${' '.repeat(20)}Truth; the state or quality of being true.
+${' '.repeat(20)}From Latin, meaning "truth" or "reality."`;
+            },
+            reports: () => {
+                return `Research Reports:
+${' '.repeat(20)}No reports available at this time.
+${' '.repeat(20)}Check back soon for our latest findings.`;
+            },
+            clear: () => {
+                const lines = terminal.querySelectorAll('.terminal-line, .output');
+                lines.forEach(line => line.remove());
+                return null;
+            },
+            contact: () => {
+                return `Contact Veritas Research Group:
+${' '.repeat(20)}rishabjain@college.harvard.edu`;
+            }
+        };
+
+        function addOutput(text, isError = false) {
+            if (text === null) return;
+            const output = document.createElement('div');
+            output.className = 'output' + (isError ? ' error' : '');
+            output.textContent = text;
+            terminal.insertBefore(output, terminal.querySelector('.input-line'));
+            // Smooth scroll to bottom
+            setTimeout(() => {
+                terminal.scrollTo({
+                    top: terminal.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 10);
+        }
+
+        function addCommandLine(cmd) {
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+            line.innerHTML = `<span class="prompt">veritas@research:~$</span> <span class="command">${cmd}</span>`;
+            terminal.insertBefore(line, terminal.querySelector('.input-line'));
+            // Auto-scroll to bottom
+            setTimeout(() => {
+                terminal.scrollTo({
+                    top: terminal.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 10);
+        }
+
+        function executeCommand(cmd) {
+            cmd = cmd.trim().toLowerCase();
+            if (!cmd) return;
+
+            addCommandLine(cmd);
+            commandHistory.push(cmd);
+            historyIndex = commandHistory.length;
+
+            if (cmd.startsWith('/')) {
+                cmd = cmd.substring(1);
+            }
+
+            if (commands[cmd]) {
+                const result = commands[cmd]();
+                if (result !== null) {
+                    addOutput(result);
+                }
+            } else {
+                addOutput(`Command not found: ${cmd}. Type '/help' for available commands.`, true);
+            }
+        }
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = input.value;
+                executeCommand(cmd);
+                input.value = '';
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    input.value = commandHistory[historyIndex];
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    input.value = commandHistory[historyIndex];
+                } else {
+                    historyIndex = commandHistory.length;
+                    input.value = '';
+                }
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                // Tab completion - find matching commands
+                const inputValue = input.value.toLowerCase().replace(/^\//, '');
+                const matches = Object.keys(commands).filter(cmd => 
+                    cmd.startsWith(inputValue) && cmd !== inputValue
+                );
+                if (matches.length === 1) {
+                    input.value = '/' + matches[0];
+                } else if (matches.length > 1) {
+                    // Show all matches
+                    addOutput(`Possible completions: ${matches.map(m => '/' + m).join(' ')}`);
+                }
+            }
+        });
+
+        // Focus input on click
+        terminal.addEventListener('click', () => {
+            input.focus();
+        });
+
+        // Fetch weather for Cambridge, MA
+        const weatherContent = document.getElementById('weather-content');
+        let weatherLoaded = false;
+        let waveAnimationInterval = null;
+        
+        // Create animated wave with SVG boat
+        function createWave() {
+            const boatSVG = `
+                <svg class="boat-svg" viewBox="0 0 1259 1280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                    <g transform="translate(0,1280) scale(0.1,-0.1)" fill="#333" stroke="none">
+                        <path d="M4692 12785 c-117 -33 -219 -119 -274 -233 -31 -63 -33 -73 -33 -177 0 -102 2 -114 31 -175 17 -36 52 -88 77 -116 l47 -52 0 -4428 0 -4429 -2205 -3 -2206 -2 118 -138 c294 -344 529 -598 868 -938 610 -612 1134 -1054 1670 -1409 652 -432 1178 -641 1697 -676 274 -19 728 -4 1093 37 1577 173 3471 893 5410 2057 509 305 1181 752 1544 1026 l55 41 -3755 2 -3754 3 -3 4430 -2 4429 29 31 c119 126 160 289 111 436 -41 120 -113 201 -227 256 -61 29 -87 36 -155 39 -54 3 -101 -1 -136 -11z"/>
+                        <path d="M5452 11888 c452 -2355 623 -3791 605 -5068 -8 -507 -26 -771 -83 -1160 -90 -620 -263 -1182 -498 -1622 l-72 -135 3126 -6 c1718 -3 3127 -4 3129 -1 12 12 -301 700 -520 1139 -654 1315 -1394 2476 -2338 3665 -804 1013 -1851 2099 -2956 3066 -201 176 -433 374 -438 374 -2 0 18 -114 45 -252z"/>
+                        <path d="M4220 9345 c0 -29 -82 -368 -126 -524 -277 -971 -745 -1794 -1468 -2580 -353 -384 -693 -695 -1496 -1366 -567 -474 -836 -707 -1030 -893 l-95 -91 2113 -1 2112 0 0 2735 c0 1504 -2 2735 -5 2735 -3 0 -5 -7 -5 -15z"/>
+                    </g>
+                </svg>
+            `;
+            
+            // Create boat container once (not recreated every frame)
+            const boatContainer = document.createElement('div');
+            boatContainer.className = 'ship-container';
+            const boatWrapper = document.createElement('div');
+            boatWrapper.className = 'boat-wrapper';
+            boatWrapper.innerHTML = boatSVG;
+            boatContainer.appendChild(boatWrapper);
+            weatherContent.appendChild(boatContainer);
+            
+            // Create wave container
+            const waveContainer = document.createElement('pre');
+            waveContainer.className = 'wave-text';
+            weatherContent.appendChild(waveContainer);
+            
+            let offset = 0;
+            let lastTime = 0;
+            
+            function animateWave(timestamp) {
+                // Throttle to ~100ms intervals for smooth animation
+                if (timestamp - lastTime >= 100) {
+                    // Create nicer water waves with varying patterns
+                    const waveChars = ['~', '≈', '～', '〜'];
+                    const waveLine1 = [];
+                    const waveLine2 = [];
+                    const waveLine3 = [];
+                    
+                    for (let i = 0; i < 50; i++) {
+                        const pos = (i + offset) % 6;
+                        const waveIndex = Math.floor((i + offset) / 2) % waveChars.length;
+                        
+                        // Create layered wave effect
+                        if (pos === 0 || pos === 1) {
+                            waveLine1.push(waveChars[waveIndex]);
+                            waveLine2.push(' ');
+                            waveLine3.push(' ');
+                        } else if (pos === 2 || pos === 3) {
+                            waveLine1.push(' ');
+                            waveLine2.push(waveChars[waveIndex]);
+                            waveLine3.push(' ');
+                        } else {
+                            waveLine1.push(' ');
+                            waveLine2.push(' ');
+                            waveLine3.push(waveChars[waveIndex]);
+                        }
+                    }
+                    
+                    // Only update the wave text, not the boat
+                    const waves = [
+                        waveLine1.join(''),
+                        waveLine2.join(''),
+                        waveLine3.join('')
+                    ].join('\n');
+                    
+                    waveContainer.textContent = waves;
+                    offset++;
+                    lastTime = timestamp;
+                }
+                
+                waveAnimationInterval = requestAnimationFrame(animateWave);
+            }
+            
+            waveAnimationInterval = requestAnimationFrame(animateWave);
+        }
+        
+        createWave();
+        
+        // Make wave clickable
+        weatherContent.addEventListener('click', () => {
+            if (!weatherLoaded) {
+                weatherLoaded = true;
+                if (waveAnimationInterval) {
+                    cancelAnimationFrame(waveAnimationInterval);
+                    waveAnimationInterval = null;
+                }
+                weatherContent.classList.remove('ship-container');
+                weatherContent.textContent = 'Loading...';
+                weatherContent.classList.add('weather-loading');
+                fetchWeather();
+            }
+        });
+        
+        async function fetchWeather() {
+            try {
+                // Scrape water temperature from MIT Sailing Pavilion
+                const url = 'https://sailing.mit.edu/weather/';
+                // Use CORS proxy to fetch the page
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+                
+                const response = await fetch(proxyUrl);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch weather page');
+                }
+                
+                const html = await response.text();
+                
+                // Extract water temperature
+                // HTML structure: <td class='metric_name'>Temperature<br/>Water</td> ... <a>32.0</a>
+                const waterTempMatch = html.match(/Temperature.*?Water.*?metric_large.*?<a[^>]*>([\d.]+)/is);
+                
+                if (waterTempMatch) {
+                    const waterTemp = Math.round(parseFloat(waterTempMatch[1]));
+                    weatherContent.innerHTML = `the water in the charles is ${waterTemp}° right <a href="https://sailing.mit.edu/weather/" style="color: #666; text-decoration: underline;">now</a>`;
+                } else {
+                    weatherContent.innerHTML = 'the water in the charles is --° right <a href="https://sailing.mit.edu/weather/" style="color: #666; text-decoration: underline;">now</a>';
+                }
+                weatherContent.classList.remove('weather-loading', 'water-wave', 'ship-container');
+                
+            } catch (error) {
+                console.error('Weather fetch error:', error);
+                // Try alternative CORS proxy
+                try {
+                    const url = 'https://sailing.mit.edu/weather/';
+                    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+                    const response = await fetch(proxyUrl);
+                    
+                    if (response.ok) {
+                        const html = await response.text();
+                        
+                        // Extract water temperature
+                        const waterTempMatch = html.match(/Temperature.*?Water.*?metric_large.*?<a[^>]*>([\d.]+)/is);
+                        
+                        if (waterTempMatch) {
+                            const waterTemp = Math.round(parseFloat(waterTempMatch[1]));
+                            weatherContent.innerHTML = `the water in the charles is ${waterTemp}° right <a href="https://sailing.mit.edu/weather/" style="color: #666; text-decoration: underline;">now</a>`;
+                        } else {
+                            weatherContent.innerHTML = 'the water in the charles is --° right <a href="https://sailing.mit.edu/weather/" style="color: #666; text-decoration: underline;">now</a>';
+                        }
+                        weatherContent.classList.remove('weather-loading', 'water-wave', 'ship-container');
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Fallback weather fetch error:', e);
+                }
+                
+                weatherContent.innerHTML = 'the water in the charles is --° right <a href="https://sailing.mit.edu/weather/" style="color: #666; text-decoration: underline;">now</a>';
+                weatherContent.classList.remove('weather-loading', 'water-wave', 'ship-container');
+            }
+        }
+    </script>
+</body>
+</html>
