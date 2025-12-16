@@ -4,23 +4,28 @@ Independent Equity Research on ML Bio Plays
 
 ## Deployment
 
-This site is deployed via GitHub Pages.
+This site is deployed via Netlify.
 
-### Enable GitHub Pages
+### Deploy to Netlify
 
-1. Go to your repository: https://github.com/RJain12/veritasresearchgroup
-2. Click **Settings** → **Pages** (in the left sidebar)
-3. Under **Source**, select **Deploy from a branch**
-4. Choose **main** branch and **/ (root)** folder
-5. Click **Save**
+**Option 1: Connect GitHub Repository (Recommended)**
+1. Go to [Netlify](https://app.netlify.com)
+2. Click **Add new site** → **Import an existing project**
+3. Connect to GitHub and select `RJain12/veritasresearchgroup`
+4. Build settings:
+   - Build command: (leave empty)
+   - Publish directory: `.` (root)
+5. Click **Deploy site**
 
-Your site will be live at: `https://rjain12.github.io/veritasresearchgroup/`
+**Option 2: Drag & Drop**
+1. Go to [Netlify](https://app.netlify.com)
+2. Drag the entire project folder to the deploy area
+3. Your site will be live instantly!
 
-### Custom Domain (Optional)
+### Custom Domain
 
-To use your own domain:
-
-1. Create a file named `CNAME` in the root directory with your domain name (e.g., `veritasresearchgroup.com`)
-2. In your domain's DNS settings, add a CNAME record pointing to `rjain12.github.io`
-3. GitHub Pages will automatically configure SSL for your custom domain
+1. In Netlify dashboard, go to **Site settings** → **Domain management**
+2. Click **Add custom domain** and enter your domain
+3. Follow Netlify's DNS instructions (add A/CNAME records)
+4. SSL will be automatically configured
 
